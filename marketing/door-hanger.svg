@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 2000" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0f1e"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="boltGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="2000" fill="url(#bgGrad)"/>
+
+  <!-- Top cutout for door hanger hole -->
+  <circle cx="600" cy="120" r="45" fill="#0a0f1e" stroke="#1e293b" stroke-width="3"/>
+  <circle cx="600" cy="120" r="30" fill="#111827"/>
+  <circle cx="600" cy="120" r="20" fill="#0a0f1e"/>
+
+  <!-- Bolt icon -->
+  <g transform="translate(540, 160) scale(1.6)">
+    <path d="M28 0 L8 42 L22 42 L14 76 L48 32 L32 32 L46 0 Z"
+          fill="url(#boltGrad)" stroke="#2563eb" stroke-width="1.5"/>
+  </g>
+
+  <!-- Headline -->
+  <text x="600" y="360" text-anchor="middle"
+        font-family="Inter, 'Segoe UI', sans-serif" font-size="84" font-weight="800"
+        fill="#f1f5f9" letter-spacing="-0.02em">
+    YOUR ADDRESS
+  </text>
+  <text x="600" y="450" text-anchor="middle"
+        font-family="Inter, 'Segoe UI', sans-serif" font-size="84" font-weight="800"
+        fill="#3b82f6" letter-spacing="-0.02em" filter="url(#glow)">
+    IS COVERED
+  </text>
+
+  <!-- Divider -->
+  <rect x="350" y="500" width="500" height="3" rx="1.5" fill="#3b82f6" opacity="0.5"/>
+
+  <!-- Subhead -->
+  <text x="600" y="560" text-anchor="middle"
+        font-family="Inter, 'Segoe UI', sans-serif" font-size="36" font-weight="600"
+        fill="#94a3b8">
+    Rebel Wireless can connect you today
+  </text>
+
+  <!-- Key offers -->
+  <g transform="translate(120, 620)">
+    <rect x="0" y="0" width="320" height="200" rx="16" fill="#111827" stroke="#1e293b" stroke-width="2"/>
+    <text x="160" y="50" text-anchor="middle" font-family="Inter, sans-serif" font-size="52" font-weight="800" fill="#3b82f6">$15</text>
+    <text x="160" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="500" fill="#94a3b8">per month</text>
+    <text x="160" y="120" text-anchor="middle" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#f1f5f9">15 Mbps</text>
+    <text x="160" y="155" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" fill="#64748b">Unlimited data</text>
+    <text x="160" y="180" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" fill="#64748b">No contract</text>
+
+    <rect x="440" y="0" width="320" height="200" rx="16" fill="#0f1a3a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="600" y="50" text-anchor="middle" font-family="Inter, sans-serif" font-size="52" font-weight="800" fill="#3b82f6">$50</text>
+    <text x="600" y="80" text-anchor="middle" font-family="Inter, sans-serif" font-size="22" font-weight="500" fill="#94a3b8">per month</text>
+    <text x="600" y="120" text-anchor="middle" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#fbbf24">⭐ Best Value</text>
+    <text x="600" y="155" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" fill="#94a3b8">1 Gbps — Fiber</text>
+    <text x="600" y="180" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" fill="#64748b">Most popular plan</text>
+  </g>
+
+  <!-- Call-to-action -->
+  <rect x="300" y="920" width="600" height="80" rx="12" fill="#3b82f6" opacity="0.9"/>
+  <text x="600" y="972" text-anchor="middle" font-family="Inter, sans-serif"
+        font-size="32" font-weight="700" fill="#fff">
+    Scan to check your address →
+  </text>
+
+  <!-- QR code placeholder -->
+  <rect x="475" y="1040" width="250" height="250" rx="16" fill="#fff"/>
+  <text x="600" y="1200" text-anchor="middle" font-family="monospace" font-size="180" fill="#0a0f1e" font-weight="700">RW</text>
+
+  <!-- URL -->
+  <text x="600" y="1330" text-anchor="middle" font-family="Inter, sans-serif"
+        font-size="28" font-weight="600" fill="#3b82f6">rebelwireless.ca</text>
+
+  <!-- Features -->
+  <g transform="translate(150, 1420)">
+    <rect x="0" y="0" width="900" height="200" rx="16" fill="#111827" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="450" y="48" text-anchor="middle" font-family="Inter, sans-serif" font-size="26" font-weight="700" fill="#f1f5f9">All plans include:</text>
+
+    <text x="150" y="90" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" fill="#94a3b8">⚡ Unlimited Data</text>
+    <text x="450" y="90" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" fill="#94a3b8">⚡ No Contract</text>
+    <text x="750" y="90" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" fill="#94a3b8">⚡ Free Install</text>
+    <text x="150" y="130" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" fill="#94a3b8">⚡ Equipment Included</text>
+    <text x="450" y="130" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" fill="#94a3b8">⚡ Rate Locked for Life</text>
+    <text x="750" y="130" text-anchor="middle" font-family="Inter, sans-serif" font-size="18" fill="#94a3b8">⚡ Local Calgary Support</text>
+
+    <text x="450" y="175" text-anchor="middle" font-family="Inter, sans-serif"
+          font-size="18" font-weight="600" fill="#22c55e">Same price for business as residential</text>
+  </g>
+
+  <!-- Contact -->
+  <g transform="translate(0, 1700)">
+    <rect x="200" y="0" width="800" height="120" rx="12" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+    <text x="400" y="45" text-anchor="middle" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#f1f5f9">📞 (587) 205-5550</text>
+    <text x="800" y="45" text-anchor="middle" font-family="Inter, sans-serif" font-size="20" font-weight="600" fill="#f1f5f9">✉ hello@rebelwireless.ca</text>
+    <text x="600" y="85" text-anchor="middle" font-family="Inter, sans-serif" font-size="16" fill="#64748b">Mon–Fri 9AM–5PM | Calgary, AB</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="600" y="1920" text-anchor="middle" font-family="Inter, sans-serif"
+        font-size="16" fill="#475569" font-weight="500">Internet on Your Terms. 🇨🇦</text>
+</svg>

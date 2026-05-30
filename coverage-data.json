@@ -1,0 +1,24 @@
+{
+  "_comment": "Rebel Wireless Coverage Map Data",
+  "_instructions": "Edit this file to update the coverage map. Set status to 'active' (available now), 'coming_soon', or 'planned'. Save the file and restart the container, or the app will auto-reload changes.",
+  "_default_radius_m": 120,
+  "areas": [
+    { "name": "Downtown Core", "lat": 51.045, "lng": -114.057, "status": "active", "service": "WISP + Fiber" },
+    { "name": "Beltline", "lat": 51.037, "lng": -114.070, "status": "active", "service": "WISP + Fiber" },
+    { "name": "East Village", "lat": 51.046, "lng": -114.040, "status": "active", "service": "WISP + Fiber" },
+    { "name": "Mission", "lat": 51.033, "lng": -114.067, "status": "active", "service": "WISP + Fiber" },
+    { "name": "Eau Claire", "lat": 51.052, "lng": -114.062, "status": "active", "service": "WISP + Fiber" },
+    { "name": "Sunnyside", "lat": 51.055, "lng": -114.070, "status": "active", "service": "WISP" },
+    { "name": "Kensington", "lat": 51.053, "lng": -114.085, "status": "active", "service": "WISP" },
+    { "name": "Bridgeland", "lat": 51.051, "lng": -114.042, "status": "active", "service": "WISP + Fiber" },
+    { "name": "Inglewood", "lat": 51.038, "lng": -114.020, "status": "active", "service": "WISP" },
+    { "name": "Crescent Heights", "lat": 51.060, "lng": -114.057, "status": "active", "service": "WISP" },
+    { "name": "Bankview", "lat": 51.033, "lng": -114.085, "status": "active", "service": "WISP" },
+    { "name": "Roxboro", "lat": 51.025, "lng": -114.067, "status": "active", "service": "WISP" },
+    { "name": "Cliff Bungalow", "lat": 51.029, "lng": -114.072, "status": "active", "service": "WISP" },
+    { "name": "Erlton", "lat": 51.026, "lng": -114.062, "status": "active", "service": "WISP" },
+    { "name": "Mount Royal", "lat": 51.030, "lng": -114.090, "status": "active", "service": "WISP" },
+    { "name": "Stampede Grounds", "lat": 51.032, "lng": -114.054, "status": "coming_soon", "service": "Fiber" },
+    { "name": "Ramsay", "lat": 51.041, "lng": -114.030, "status": "active", "service": "WISP" }
+  ]
+}

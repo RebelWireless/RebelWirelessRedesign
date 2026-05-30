@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 816 1056" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0f1e"/>
+      <stop offset="100%" stop-color="#0d1324"/>
+    </linearGradient>
+    <linearGradient id="boltGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="816" height="1056" fill="url(#bgGrad)"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="816" height="200" fill="#0f1a3a"/>
+  <rect x="0" y="190" width="816" height="10" stroke="#1e293b" stroke-width="1"/>
+
+  <g transform="translate(408, 60)">
+    <path d="M-160 0 L-172 18 L-166 18 L-170 32 L-154 14 L-162 14 L-156 0 Z"
+          fill="url(#boltGrad)" stroke="#2563eb" stroke-width="0.6" transform="scale(1.5)"/>
+    <text x="0" y="55" text-anchor="middle" font-family="Inter, sans-serif"
+          font-size="32" font-weight="800" fill="#f1f5f9" letter-spacing="-0.02em">REBEL WIRELESS</text>
+    <text x="0" y="78" text-anchor="middle" font-family="Inter, sans-serif"
+          font-size="14" font-weight="500" fill="#94a3b8">Calgary's Independent Internet</text>
+  </g>
+
+  <text x="408" y="250" text-anchor="middle" font-family="Inter, sans-serif"
+        font-size="13" font-weight="600" fill="#3b82f6" letter-spacing="0.1em">PRICING · 2026</text>
+  <text x="408" y="280" text-anchor="middle" font-family="Inter, sans-serif"
+        font-size="28" font-weight="700" fill="#f1f5f9">Every plan includes:</text>
+
+  <!-- Features strip -->
+  <rect x="40" y="300" width="736" height="60" rx="10" fill="rgba(59,130,246,0.06)" stroke="rgba(59,130,246,0.15)" stroke-width="1"/>
+  <text x="408" y="325" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#60a5fa">
+    ✅ Unlimited Data   ·   ✅ No Contract   ·   ✅ Free Install   ·   ✅ Equipment Included   ·   ✅ Price Locked for Life
+  </text>
+  <text x="408" y="348" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#64748b">Same price for business. No hidden fees. No surprises.</text>
+
+  <!-- ===== PLAN ROWS ===== -->
+  <!-- Plan 1: 15 Mbps -->
+  <rect x="40" y="390" width="736" height="74" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="160" y="425" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#22d3ee">WISP</text>
+  <text x="160" y="448" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#f1f5f9">15 Mbps</text>
+  <text x="160" y="448" font-family="Inter, sans-serif" font-size="12" fill="#64748b">  Everyday basics</text>
+  <text x="530" y="432" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">from</text>
+  <text x="530" y="448" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f1f5f9">$15</text>
+  <text x="580" y="445" font-family="Inter, sans-serif" font-size="14" fill="#64748b">/mo</text>
+  <text x="700" y="440" font-family="Inter, sans-serif" font-size="12" fill="#64748b">Light browsing</text>
+
+  <!-- Plan 2: 50 Mbps -->
+  <rect x="40" y="474" width="736" height="74" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="160" y="509" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#22d3ee">WISP</text>
+  <text x="160" y="532" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#f1f5f9">50 Mbps</text>
+  <text x="160" y="532" font-family="Inter, sans-serif" font-size="12" fill="#64748b">  Stream & browse</text>
+  <text x="530" y="516" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">from</text>
+  <text x="530" y="532" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f1f5f9">$25</text>
+  <text x="580" y="529" font-family="Inter, sans-serif" font-size="14" fill="#64748b">/mo</text>
+  <text x="700" y="524" font-family="Inter, sans-serif" font-size="12" fill="#64748b">HD streaming</text>
+
+  <!-- Plan 3: 100 Mbps -->
+  <rect x="40" y="558" width="736" height="74" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="160" y="593" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#22d3ee">WISP</text>
+  <text x="160" y="616" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#f1f5f9">100 Mbps</text>
+  <text x="160" y="616" font-family="Inter, sans-serif" font-size="12" fill="#64748b">  Family ready</text>
+  <text x="530" y="600" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">from</text>
+  <text x="530" y="616" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f1f5f9">$35</text>
+  <text x="580" y="613" font-family="Inter, sans-serif" font-size="14" fill="#64748b">/mo</text>
+  <text x="700" y="608" font-family="Inter, sans-serif" font-size="12" fill="#64748b">Gaming + 4K</text>
+
+  <!-- Plan 4: 500 Mbps -->
+  <rect x="40" y="642" width="736" height="74" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="160" y="677" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#60a5fa">FIBER</text>
+  <text x="160" y="700" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#f1f5f9">500 Mbps</text>
+  <text x="160" y="700" font-family="Inter, sans-serif" font-size="12" fill="#64748b">  Power user</text>
+  <text x="530" y="684" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">from</text>
+  <text x="530" y="700" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f1f5f9">$45</text>
+  <text x="580" y="697" font-family="Inter, sans-serif" font-size="14" fill="#64748b">/mo</text>
+  <text x="700" y="692" font-family="Inter, sans-serif" font-size="12" fill="#64748b">Whole home</text>
+
+  <!-- Plan 5: 1 Gbps (HIGHLIGHTED) -->
+  <rect x="40" y="726" width="736" height="80" rx="10" fill="#0f1a3a" stroke="#3b82f6" stroke-width="2"/>
+  <rect x="670" y="714" width="90" height="22" rx="5" fill="#f59e0b"/>
+  <text x="715" y="729" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#0a0f1e">⭐ BEST VALUE</text>
+  <text x="160" y="765" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#60a5fa">FIBER</text>
+  <text x="160" y="788" font-family="Inter, sans-serif" font-size="22" font-weight="700" fill="#fbbf24">1 Gbps</text>
+  <text x="160" y="788" font-family="Inter, sans-serif" font-size="12" fill="#94a3b8">  Most popular</text>
+  <text x="530" y="772" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">from</text>
+  <text x="530" y="788" text-anchor="middle" font-family="Inter, sans-serif" font-size="30" font-weight="800" fill="#fbbf24">$50</text>
+  <text x="580" y="785" font-family="Inter, sans-serif" font-size="14" fill="#94a3b8">/mo</text>
+  <text x="700" y="780" font-family="Inter, sans-serif" font-size="12" fill="#94a3b8">Best value — save $45–60/mo vs Telus/Shaw</text>
+
+  <!-- Plan 6: 1.5 Gbps -->
+  <rect x="40" y="816" width="736" height="74" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="160" y="851" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#60a5fa">FIBER</text>
+  <text x="160" y="874" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#f1f5f9">1.5 Gbps</text>
+  <text x="160" y="874" font-family="Inter, sans-serif" font-size="12" fill="#64748b">  Multi-device pro</text>
+  <text x="530" y="858" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">from</text>
+  <text x="530" y="874" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f1f5f9">$60</text>
+  <text x="580" y="871" font-family="Inter, sans-serif" font-size="14" fill="#64748b">/mo</text>
+  <text x="700" y="866" font-family="Inter, sans-serif" font-size="12" fill="#64748b">Heavy households</text>
+
+  <!-- Plan 7: 3 Gbps -->
+  <rect x="40" y="900" width="736" height="74" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="160" y="935" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#60a5fa">FIBER</text>
+  <text x="160" y="958" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#f1f5f9">3 Gbps</text>
+  <text x="160" y="958" font-family="Inter, sans-serif" font-size="12" fill="#64748b">  Extreme speed</text>
+  <text x="530" y="942" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">from</text>
+  <text x="530" y="958" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f1f5f9">$90</text>
+  <text x="580" y="955" font-family="Inter, sans-serif" font-size="14" fill="#64748b">/mo</text>
+  <text x="700" y="950" font-family="Inter, sans-serif" font-size="12" fill="#64748b">Pro studios</text>
+
+  <!-- Plan 8: 10 Gbps -->
+  <rect x="40" y="984" width="736" height="74" rx="10" fill="#111827" stroke="#1e293b" stroke-width="1"/>
+  <text x="160" y="1019" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" font-weight="600" fill="#60a5fa">FIBER</text>
+  <text x="160" y="1042" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#f1f5f9">10 Gbps</text>
+  <text x="160" y="1042" font-family="Inter, sans-serif" font-size="12" fill="#64748b">  Maximum</text>
+  <text x="530" y="1026" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#64748b">from</text>
+  <text x="530" y="1042" text-anchor="middle" font-family="Inter, sans-serif" font-size="28" font-weight="800" fill="#f1f5f9">$150</text>
+  <text x="580" y="1039" font-family="Inter, sans-serif" font-size="14" fill="#64748b">/mo</text>
+  <text x="700" y="1034" font-family="Inter, sans-serif" font-size="12" fill="#64748b">Enterprise</text>
+</svg>

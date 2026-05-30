@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rebel Wireless — Calgary's Independent Internet</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0f1e'/%3E%3Cpath d='M19 3L7 19h8l-4 10L25 13h-8l6-10z' fill='%233b82f6'/%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #0a0f1e;
+      color: #f1f5f9;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { color: #3b82f6; text-decoration: none; transition: color 0.2s; }
+    a:hover { color: #60a5fa; }
+    img { max-width: 100%; }
+    ul { list-style: none; }
+
+    /* ===== UTILITY ===== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .section {
+      padding: 100px 0;
+    }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #3b82f6;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .section-subtitle {
+      font-size: 1.125rem;
+      color: #94a3b8;
+      max-width: 600px;
+      margin-bottom: 48px;
+    }
+    @media (min-width: 768px) {
+      .section-title { font-size: 2.75rem; }
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: #3b82f6;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+      box-shadow: 0 6px 20px rgba(59,130,246,0.5);
+    }
+    .btn-outline {
+      background: transparent;
+      color: #f1f5f9;
+      border: 1px solid #2d3a50;
+    }
+    .btn-outline:hover {
+      background: #1e293b;
+      border-color: #3b82f6;
+    }
+    .btn-sm {
+      padding: 8px 18px;
+      font-size: 0.875rem;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 0;
+      transition: background 0.3s, padding 0.3s;
+    }
+    .navbar.scrolled {
+      background: rgba(10,15,30,0.92);
+      backdrop-filter: blur(12px);
+      padding: 10px 0;
+      border-bottom: 1px solid #1e293b;
+    }
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon svg {
+      width: 36px;
+      height: 36px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      padding: 8px 20px;
+      border-radius: 6px;
+      background: #3b82f6;
+      color: #fff !important;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .nav-cta:hover { background: #2563eb !important; }
+    .mobile-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .mobile-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #f1f5f9;
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #111827;
+        flex-direction: column;
+        padding: 20px 24px;
+        gap: 16px;
+        border-bottom: 1px solid #2d3a50;
+      }
+      .nav-links.open { display: flex; }
+      .mobile-toggle { display: flex; }
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 50%, rgba(59,130,246,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 30%, rgba(6,182,212,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      max-width: 720px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #60a5fa;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 span { color: #3b82f6; }
+    .hero p {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      max-width: 560px;
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      margin-top: 60px;
+      flex-wrap: wrap;
+    }
+    .hero-stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #f1f5f9;
+    }
+    .hero-stat-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    @media (max-width: 768px) {
+      .hero-stats { gap: 24px; }
+    }
+
+    /* ===== PLANS ===== */
+    #plans { background: #0d1324; }
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .plan-card {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 28px 24px;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .plan-card:hover {
+      border-color: #3b82f640;
+      transform: translateY(-4px);
+    }
+    .plan-card.best-value {
+      border-color: #3b82f6;
+      background: linear-gradient(180deg, #111827 0%, #0f1a3a 100%);
+    }
+    .plan-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+    .plan-badge.wisp { background: rgba(6,182,212,0.12); color: #22d3ee; }
+    .plan-badge.fiber { background: rgba(59,130,246,0.12); color: #60a5fa; }
+    .plan-badge.popular { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .plan-speed {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .plan-speed-sub {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .plan-price {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 8px 0 4px;
+    }
+    .plan-price-sub {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+    .plan-technology-tag {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+    .tag-wisp { background: rgba(6,182,212,0.1); color: #22d3ee; }
+    .tag-fiber { background: rgba(59,130,246,0.1); color: #60a5fa; }
+    .plan-details {
+      margin: 16px 0 20px;
+    }
+    .plan-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      padding: 4px 0;
+    }
+    .plan-detail-item svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+    .plan-detail-item .check { color: #22c55e; }
+    .plan-cta { width: 100%; justify-content: center; }
+
+    /* ===== FEATURES ===== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 28px 24px;
+    }
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(59,130,246,0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .feature-icon svg { width: 22px; height: 22px; stroke: #3b82f6; }
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    /* ===== COVERAGE MAP ===== */
+    #coverage { background: #0d1324; }
+    .map-container {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      margin-bottom: 16px;
+    }
+    #coverage-map {
+      width: 100%;
+      height: 500px;
+    }
+    .map-legend {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .legend-dot.active { background: #3b82f6; }
+    .legend-dot.coming { background: #f59e0b; }
+    .legend-dot.planned { background: #64748b; }
+    .hex-tooltip {
+      background: #111827 !important;
+      border: 1px solid #2d3a50 !important;
+      color: #f1f5f9 !important;
+      border-radius: 8px !important;
+      padding: 8px 12px !important;
+      font-family: 'Inter', sans-serif !important;
+      font-size: 13px !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+    }
+    .hex-tooltip::before { border-top-color: #2d3a50 !important; }
+
+    /* ===== COMPARE TABLE ===== */
+    .compare-table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #1e293b;
+    }
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    .compare-table th,
+    .compare-table td {
+      padding: 16px 20px;
+      text-align: left;
+      border-bottom: 1px solid #1e293b;
+    }
+    .compare-table thead th {
+      background: #111827;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+    }
+    .compare-table thead th:first-child { color: #64748b; }
+    .compare-table thead th:nth-child(2) { color: #60a5fa; }
+    .compare-table tbody tr:last-child td { border-bottom: none; }
+    .compare-table tbody tr:hover { background: rgba(59,130,246,0.03); }
+    .check-green { color: #22c55e; font-weight: 600; }
+
+    /* ===== REQUEST FORM ===== */
+    .request-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .request-wrap { grid-template-columns: 1fr; gap: 32px; }
+    }
+    .request-info ul { margin-top: 24px; }
+    .request-info li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+    .request-info li svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .request-form {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 32px;
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid #2d3a50;
+      background: #0d1324;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-group select option { background: #111827; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+    .submit-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .submit-success.show { display: block; }
+    .submit-success svg {
+      width: 48px;
+      height: 48px;
+      color: #22c55e;
+      margin-bottom: 16px;
+    }
+    .submit-success h4 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .submit-success p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    /* ===== CONTACT ===== */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .contact-item {
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .contact-icon {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 14px;
+      background: rgba(59,130,246,0.1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .contact-icon svg { width: 20px; height: 20px; stroke: #3b82f6; }
+    .contact-item h4 { font-size: 1rem; margin-bottom: 4px; }
+    .contact-item p { font-size: 0.85rem; color: #64748b; margin-bottom: 8px; }
+    .contact-detail {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid #1e293b;
+      padding: 40px 0;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .footer-logo-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .footer-logo-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .footer-links a { color: #64748b; font-size: 0.9rem; }
+    .footer-links a:hover { color: #f1f5f9; }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: #475569;
+    }
+    .footer-legal { display: flex; gap: 16px; }
+    .footer-legal a { color: #64748b; font-size: 0.8rem; }
+
+    /* ===== COVERAGE UPDATE NOTE ===== */
+    .coverage-note {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.15);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+    .coverage-note strong { color: #60a5fa; }
+
+    /* ===== FADE IN ===== */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <a href="#" class="logo">
+      <span class="logo-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#60a5fa"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="14" fill="url(#logoGrad)"/>
+          <path d="M36 10 L16 35 L28 35 L22 54 L48 28 L34 28 L44 10 Z" fill="#fff"/>
+        </svg>
+      </span>
+      Rebel Wireless
+    </a>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <a href="#plans">Plans</a>
+      <a href="#features">Features</a>
+      <a href="#coverage">Coverage</a>
+      <a href="#compare">Compare</a>
+      <a href="#contact">Contact</a>
+      <a href="#request" class="nav-cta">Get Connected</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">⚡ Calgary's Independent ISP</div>
+      <h1>Internet on <span>your terms.</span></h1>
+      <p>Rebel Wireless brings fast, fair, and local internet to Calgary. No contracts, no hidden fees, no runaround. Just high-speed connectivity from $15/mo — built with Ubiquiti gear, backed by real people in your city.</p>
+      <div class="hero-actions">
+        <a href="#plans" class="btn btn-primary">See Plans</a>
+        <a href="#request" class="btn btn-outline">Check Availability</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-value">$15–$150</div>
+          <div class="hero-stat-label">8 speed tiers</div>
+        </div>
+        <div>
+          <div class="hero-stat-value">0</div>
+          <div class="hero-stat-label">Contract lengths</div>
+        </div>
+        <div>
+          <div class="hero-stat-value">1</div>
+          <div class="hero-stat-label">Calgary team</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PLANS ===== -->
+<section class="section" id="plans">
+  <div class="container">
+    <div class="section-label">Plans</div>
+    <h2 class="section-title">Simple pricing. No surprises.</h2>
+    <p class="section-subtitle">Every plan includes unlimited data, no contract, equipment rental, and free installation. Prices are locked for life — they won't go up.</p>
+    <div class="plans-grid" id="plansGrid"></div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Why Calgary chooses Rebel</h2>
+    <p class="section-subtitle">Everything included. Nothing hidden.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg></div>
+        <h3>Unlimited Data</h3>
+        <p>No caps, no throttling, no "fair usage" fine print. Use as much as you need.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>No Contract</h3>
+        <p>Month-to-month. Stay because you want to, not because you're locked in.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div>
+        <h3>Equipment Included</h3>
+        <p>Router, ONT, and any needed hardware — included at no extra cost.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Rate Locked for Life</h3>
+        <p>Your price stays the same as long as you're a customer. No promo rate expirations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+        <h3>Local Support</h3>
+        <p>Calgary-based team, real people, no offshore call centres. Call, email, or message us.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <h3>Free Install</h3>
+        <p>Professional installation at no charge. WISP setups in as little as 48 hours.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+        <h3>Ubiquiti Gear</h3>
+        <p>Enterprise-grade Ubiquiti equipment for reliable performance. Managed through UISP.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>Same Price for Business</h3>
+        <p>Business or residential — you pay the same. No arbitrary business upcharge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== COVERAGE MAP ===== -->
+<section class="section" id="coverage">
+  <div class="container">
+    <div class="section-label">Coverage</div>
+    <h2 class="section-title">Where we're available</h2>
+    <p class="section-subtitle">Downtown Calgary and surrounding neighbourhoods. We're expanding fast — request your area below and we'll prioritize it.</p>
+    <div class="map-container">
+      <div id="coverage-map"></div>
+    </div>
+    <div class="map-legend">
+      <div class="legend-item">
+        <div class="legend-dot active"></div>
+        Available now
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot coming"></div>
+        Coming soon
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot planned"></div>
+        Planned
+      </div>
+    </div>
+    <div class="coverage-note">
+      <strong>📌 Updating the map:</strong> Coverage data is loaded from <code>coverage-data.json</code>. To add or update areas, edit that file and restart the container — the map updates automatically.
+    </div>
+  </div>
+</section>
+
+<!-- ===== COMPETITIVE COMPARISON ===== -->
+<section class="section" id="compare">
+  <div class="container">
+    <div class="section-label">Compare</div>
+    <h2 class="section-title">Rebel vs the big three</h2>
+    <p class="section-subtitle">See how we stack up against Telus, Shaw, and Rogers on a 1 Gbps plan.</p>
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Rebel Wireless</th>
+            <th>Telus</th>
+            <th>Shaw / Rogers</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1 Gbps Price</td>
+            <td>$50/mo</td>
+            <td>$95/mo</td>
+            <td>$110/mo</td>
+          </tr>
+          <tr>
+            <td>Contract</td>
+            <td><span class="check-green">None</span></td>
+            <td>2-year term</td>
+            <td>1-year term</td>
+          </tr>
+          <tr>
+            <td>Data Cap</td>
+            <td><span class="check-green">Unlimited</span></td>
+            <td>1–3 TB</td>
+            <td>1 TB</td>
+          </tr>
+          <tr>
+            <td>Equipment Fee</td>
+            <td><span class="check-green">Included</span></td>
+            <td>$15/mo</td>
+            <td>$12/mo</td>
+          </tr>
+          <tr>
+            <td>Installation</td>
+            <td><span class="check-green">Free</span></td>
+            <td>$99+</td>
+            <td>$49+</td>
+          </tr>
+          <tr>
+            <td>Price Lock</td>
+            <td><span class="check-green">For life</span></td>
+            <td>Promo period</td>
+            <td>Promo period</td>
+          </tr>
+          <tr>
+            <td>Business Price</td>
+            <td><span class="check-green">Same</span></td>
+            <td>+$20–50/mo</td>
+            <td>+$15–40/mo</td>
+          </tr>
+          <tr>
+            <td>Support</td>
+            <td><span class="check-green">Calgary M-F 9-5</span></td>
+            <td>24/7 offshore</td>
+            <td>24/7 offshore</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REQUEST COVERAGE ===== -->
+<section class="section" id="request">
+  <div class="container">
+    <div class="request-wrap">
+      <div class="request-info">
+        <div class="section-label">Get Connected</div>
+        <h3>Request service or check availability</h3>
+        <p>Fill out the form and we'll check if your address can be served. If it can't yet, we'll add it to our build queue and let you know when we're coming.</p>
+        <ul>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            WISP connections in as little as 48 hours
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Fiber builds typically 2–4 weeks
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Free install at activation
+          </li>
+        </ul>
+      </div>
+      <div class="request-form" id="requestForm">
+        <div class="form-body" id="formBody">
+          <div class="form-group">
+            <label for="formName">Full name</label>
+            <input type="text" id="formName" placeholder="e.g. Jane Smith" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="formEmail">Email</label>
+              <input type="email" id="formEmail" placeholder="jane@example.com">
+            </div>
+            <div class="form-group">
+              <label for="formPhone">Phone</label>
+              <input type="tel" id="formPhone" placeholder="403-555-xxxx">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="formAddress">Calgary address</label>
+            <input type="text" id="formAddress" placeholder="e.g. 123 8 Ave SW" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="formSpeed">Speed interested in</label>
+              <select id="formSpeed">
+                <option value="">Not sure yet</option>
+                <option value="15">15 Mbps — $15</option>
+                <option value="50">50 Mbps — $25</option>
+                <option value="100">100 Mbps — $35</option>
+                <option value="500">500 Mbps — $45</option>
+                <option value="1000">1 Gbps — $50</option>
+                <option value="1500">1.5 Gbps — $60</option>
+                <option value="3000">3 Gbps — $90</option>
+                <option value="10000">10 Gbps — $150</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="formType">Service type</label>
+              <select id="formType">
+                <option value="">Either</option>
+                <option value="residential">Residential</option>
+                <option value="business">Business</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="formMessage">Notes (optional)</label>
+            <textarea id="formMessage" placeholder="Questions, special requirements, preferred install time..."></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center" id="submitBtn">Submit Request</button>
+        </div>
+        <div class="submit-success" id="submitSuccess">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <h4>Thanks, you're on the list!</h4>
+          <p>We'll check your address and get back to you within 1 business day. If we can't serve you yet, we'll add your area to our build plan.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section-label">Contact</div>
+    <h2 class="section-title">Get in touch</h2>
+    <p class="section-subtitle">Local support. Real people. {{ contact.hours }}.</p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+        <h4>Phone</h4>
+        <p>Give us a call</p>
+        <div class="contact-detail">{{ contact.phone }}</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <h4>Email</h4>
+        <p>Drop us a line</p>
+        <div class="contact-detail">{{ contact.email }}</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <h4>Message</h4>
+        <p>Online form or text</p>
+        <div class="contact-detail">rebelwireless.ca/contact</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <h4>Mailing Address</h4>
+        <p>Send us mail</p>
+        <div class="contact-detail">{{ contact.address }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-logo">
+        <span class="footer-logo-icon">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:32px;height:32px">
+            <defs>
+              <linearGradient id="logoGradFoot" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#3b82f6"/>
+                <stop offset="100%" stop-color="#60a5fa"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="14" fill="url(#logoGradFoot)"/>
+            <path d="M36 10 L16 35 L28 35 L22 54 L48 28 L34 28 L44 10 Z" fill="#fff"/>
+          </svg>
+        </span>
+        Rebel Wireless
+      </div>
+      <div class="footer-links">
+        <a href="#plans">Plans</a>
+        <a href="#features">Features</a>
+        <a href="#coverage">Coverage</a>
+        <a href="#compare">Compare</a>
+        <a href="#request">Get Connected</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Rebel Wireless. Calgary, AB.</p>
+      <div class="footer-legal">
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Acceptable Use</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // ===== PRICING DATA =====
+  const plans = [
+    { speed: '15 Mbps', speedSub: 'Everyday basics', price: '$15', desc: 'Light browsing, email, social', tech: 'wisp', badge: 'wisp', popular: false, bestValue: false },
+    { speed: '50 Mbps', speedSub: 'Stream & browse', price: '$25', desc: 'Stream HD, video calls, music', tech: 'wisp', badge: 'wisp', popular: false, bestValue: false },
+    { speed: '100 Mbps', speedSub: 'Family ready', price: '$35', desc: '4K streaming, gaming, multiple devices', tech: 'wisp', badge: 'wisp', popular: false, bestValue: false },
+    { speed: '500 Mbps', speedSub: 'Power user', price: '$45', desc: 'Gaming, streaming, WFH, whole home', tech: 'fiber', badge: 'fiber', popular: true, bestValue: false },
+    { speed: '1 Gbps', speedSub: 'Most popular', price: '$50', desc: 'Ultra-fast for everything. Best value.', tech: 'fiber', badge: 'popular', popular: true, bestValue: true },
+    { speed: '1.5 Gbps', speedSub: 'Multi-device pro', price: '$60', desc: 'Heavy households, creators, servers', tech: 'fiber', badge: 'fiber', popular: false, bestValue: false },
+    { speed: '3 Gbps', speedSub: 'Extreme speed', price: '$90', desc: 'Pro studios, NAS, high-throughput', tech: 'fiber', badge: 'fiber', popular: false, bestValue: false },
+    { speed: '10 Gbps', speedSub: 'Maximum', price: '$150', desc: 'Data centres, enterprises, enthusiasts', tech: 'fiber', badge: 'fiber', popular: false, bestValue: false },
+  ];
+
+  const planFeatures = [
+    { label: 'Unlimited data', icon: 'check' },
+    { label: 'No contract', icon: 'check' },
+    { label: 'Equipment included', icon: 'check' },
+    { label: 'Free install', icon: 'check' },
+    { label: 'Price locked for life', icon: 'check' },
+    { label: 'Local support M-F 9-5', icon: 'check' },
+  ];
+
+  const plansGrid = document.getElementById('plansGrid');
+
+  plans.forEach((plan, i) => {
+    const card = document.createElement('div');
+    card.className = `plan-card${plan.bestValue ? ' best-value' : ''}`;
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+
+    const badgeLabel = plan.badge === 'popular' ? '⭐ Best Value' : plan.badge === 'wisp' ? 'WISP' : 'Fiber';
+
+    card.innerHTML = `
+      <div class="plan-badge ${plan.badge}">${badgeLabel}</div>
+      <div class="plan-speed">${plan.speed}</div>
+      <div class="plan-speed-sub">${plan.speedSub}</div>
+      <div class="plan-price">${plan.price}<span style="font-size:1rem;color:#94a3b8;font-weight:400">/mo</span></div>
+      <div class="plan-price-sub">${plan.desc}</div>
+      <div style="margin-bottom:12px">
+        <span class="plan-technology-tag ${plan.tech === 'wisp' ? 'tag-wisp' : 'tag-fiber'}">
+          ${plan.tech === 'wisp' ? 'Fixed Wireless' : 'Fiber'}
+        </span>
+      </div>
+      <div class="plan-details">
+        ${planFeatures.map(f => `
+          <div class="plan-detail-item">
+            <svg viewBox="0 0 24 24" fill="none" class="check" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            ${f.label}
+          </div>
+        `).join('')}
+      </div>
+      <a href="#request" class="btn ${plan.bestValue ? 'btn-primary' : 'btn-outline'} plan-cta">Get Connected</a>
+    `;
+
+    plansGrid.appendChild(card);
+
+    // Stagger animation
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, 100 + i * 80);
+  });
+
+  // ===== COVERAGE MAP (loaded from API) =====
+  const map = L.map('coverage-map', {
+    center: [51.045, -114.065],
+    zoom: 13,
+    zoomControl: false,
+    attributionControl: false,
+  });
+
+  // CartoDB Dark Matter tiles
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd',
+    maxZoom: 20,
+  }).addTo(map);
+
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+  function statusColor(status) {
+    switch (status) {
+      case 'active':      return '#3b82f6';
+      case 'coming_soon': return '#f59e0b';
+      case 'planned':     return '#64748b';
+    }
+  }
+
+  function statusLabel(status) {
+    switch (status) {
+      case 'active':      return 'Available Now';
+      case 'coming_soon': return 'Coming Soon';
+      case 'planned':     return 'Planned';
+    }
+  }
+
+  function statusFillOpacity(status) {
+    switch (status) {
+      case 'active':      return 0.35;
+      case 'coming_soon': return 0.22;
+      case 'planned':     return 0.12;
+    }
+  }
+
+  // Hex size in degrees (~120m radius at 51°N)
+  const hexSize = 0.0011;
+
+  function hexCorners(cx, cy, size) {
+    const corners = [];
+    for (let i = 0; i < 6; i++) {
+      const angle = (60 * i - 30) * Math.PI / 180;
+      corners.push([cx + size * Math.cos(angle), cy + size * Math.sin(angle)]);
+    }
+    return corners;
+  }
+
+  function renderCoverage(areas) {
+    const coords = [];
+    areas.forEach(loc => {
+      const hex = L.polygon(hexCorners(loc.lat, loc.lng, hexSize), {
+        color: statusColor(loc.status),
+        weight: 1.5,
+        opacity: 0.8,
+        fillColor: statusColor(loc.status),
+        fillOpacity: statusFillOpacity(loc.status),
+      }).addTo(map);
+
+      hex.bindTooltip(
+        `<strong>${loc.name}</strong><br>` +
+        `<span style="color:${statusColor(loc.status)}">● ${statusLabel(loc.status)}</span><br>` +
+        `<span style="color:#94a3b8;font-size:11px">${loc.service}</span>`,
+        { direction: 'top', offset: [0, -8], className: 'hex-tooltip' }
+      );
+
+      hex.on('mouseover', () => {
+        hex.setStyle({ fillOpacity: 0.7, weight: 2.5 });
+        hex.bringToFront();
+      });
+      hex.on('mouseout', () => {
+        hex.setStyle({ fillOpacity: statusFillOpacity(loc.status), weight: 1.5 });
+      });
+
+      coords.push([loc.lat, loc.lng]);
+    });
+
+    if (coords.length > 0) {
+      map.fitBounds(coords, { padding: [60, 60] });
+    }
+  }
+
+  // Fetch coverage data from the API
+  fetch('/api/coverage')
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.areas) {
+        renderCoverage(data.areas);
+      } else {
+        console.warn('No coverage areas found in API response');
+      }
+    })
+    .catch(err => {
+      console.error('Failed to load coverage data:', err);
+    });
+
+  // ===== NAVIGATION SCROLL =====
+  const navbar = document.getElementById('navbar');
+  const mobileToggle = document.getElementById('mobileToggle');
+  const navLinks = document.getElementById('navLinks');
+
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 100);
+  });
+
+  mobileToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+
+  // Close mobile nav on link click
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+
+  // ===== FADE IN ON SCROLL =====
+  const fadeEls = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  fadeEls.forEach(el => observer.observe(el));
+
+  // ===== FORM HANDLING =====
+  const formBody = document.getElementById('formBody');
+  const submitSuccess = document.getElementById('submitSuccess');
+  const submitBtn = document.getElementById('submitBtn');
+
+  submitBtn.addEventListener('click', () => {
+    const name = document.getElementById('formName').value.trim();
+    const address = document.getElementById('formAddress').value.trim();
+
+    if (!name) { alert('Please enter your name.'); return; }
+    if (!address) { alert('Please enter your Calgary address.'); return; }
+
+    formBody.style.display = 'none';
+    submitSuccess.classList.add('show');
+  });
+</script>
+</body>
+</html>

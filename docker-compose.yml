@@ -1,0 +1,32 @@
+# ===== Rebel Wireless — Docker Compose =====
+# Deploy on Coolify or any Docker host.
+#
+# To update coverage data:
+#   1. Edit ./coverage-data.json on the host
+#   2. Restart the container: docker compose restart
+#
+# Override contact info via environment variables:
+#   REBEL_PHONE, REBEL_EMAIL, REBEL_ADDRESS
+
+services:
+  rebel-wireless:
+    build: .
+    container_name: rebel-wireless
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount coverage data as a volume — edit this file to update the map
+      - ./coverage-data.json:/app/coverage-data.json
+    environment:
+      - REBEL_PHONE=(587) 205-5550
+      - REBEL_EMAIL=hello@rebelwireless.ca
+      - REBEL_ADDRESS=315 204 1440 52 St NE, Calgary AB T2A 4T8
+      # Uncomment and set to your domain for CSRF/proxy support:
+      # - SERVER_NAME=rebelwireless.ca
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/coverage"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
