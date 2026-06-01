@@ -24,9 +24,6 @@ COPY app.py .
 COPY coverage-data.json .
 COPY templates/ templates/
 
-# Mount point for external coverage-data editing
-VOLUME /app/coverage-data.json
-
 EXPOSE 5000
 
 USER rebel
