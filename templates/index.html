@@ -739,7 +739,7 @@
     <span class="status-indicator"><span class="dot grey" id="statusDot"></span> <span id="statusLabel">Checking network...</span></span>
     <span id="statusDevices">—</span>
     <span id="statusSites">—</span>
-    <a href="https://uisp.rebelwireless.ca/crm" class="portal-link" target="_blank" rel="noopener">Customer Portal ↗</a>
+    <a href="https://uisp.rebelwireless.ca/crm" class="portal-link" id="portalLink" target="_blank" rel="noopener">Customer Portal ↗</a>
   </div>
 </div>
 
@@ -1334,6 +1334,7 @@
   const statusLabelEl = document.getElementById('statusLabel');
   const statusDevices = document.getElementById('statusDevices');
   const statusSites = document.getElementById('statusSites');
+  const portalLink = document.getElementById('portalLink');
 
   async function updateNetworkStatus() {
     try {
@@ -1345,9 +1346,11 @@
         statusLabelEl.textContent = 'UISP offline';
         statusDevices.textContent = '';
         statusSites.textContent = '';
+        portalLink.style.display = 'none';
         return;
       }
 
+      portalLink.style.display = '';
       const devs = data.devices;
       const sites = data.sites;
       const allUp = devs.down === 0 && devs.degraded === 0;
@@ -1363,6 +1366,7 @@
       console.error('Status fetch failed:', err);
       statusDot.className = 'dot grey';
       statusLabelEl.textContent = 'Status unavailable';
+      portalLink.style.display = 'none';
     }
   }
 
