@@ -19,9 +19,11 @@ services:
       - REBEL_PHONE=(587) 205-5550
       - REBEL_EMAIL=hello@rebelwireless.ca
       - REBEL_ADDRESS=315 204 1440 52 St NE, Calgary AB T2A 4T8
-      # UISP integration — set your API token
+      # UISP integration — set your API tokens
       - UISP_BASE_URL=https://uisp.rebelwireless.ca
       - UISP_API_TOKEN=${UISP_API_TOKEN:-}
+      # CRM app key (separate from NMS token — generate in UISP CRM → Settings → App keys)
+      - UISP_CRM_APP_KEY=${UISP_CRM_APP_KEY:-}
       # Uncomment and set to your domain for CSRF/proxy support:
       # - SERVER_NAME=rebelwireless.ca
     healthcheck:

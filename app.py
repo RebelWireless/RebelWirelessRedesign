@@ -22,7 +22,8 @@ app = Flask(__name__)
 
 # ── Config ────────────────────────────────────────────────────
 UISP_BASE_URL = os.environ.get("UISP_BASE_URL", "https://uisp.rebelwireless.ca")
-UISP_TOKEN = os.environ.get("UISP_API_TOKEN", "")
+UISP_API_TOKEN = os.environ.get("UISP_API_TOKEN", "")
+UISP_CRM_APP_KEY = os.environ.get("UISP_CRM_APP_KEY", "")
 UISP_TIMEOUT = int(os.environ.get("UISP_TIMEOUT", "10"))
 
 COVERAGE_DATA_PATH = Path(os.environ.get("COVERAGE_DATA_PATH", "/app/coverage-data.json"))
@@ -31,7 +32,6 @@ COVERAGE_DATA_PATH = Path(os.environ.get("COVERAGE_DATA_PATH", "/app/coverage-da
 _cache: dict = {}  # {key: {"data": ..., "ts": float, "ttl": float}}
 
 def cached(key: str, ttl: float = 60):
-    """Simple in-memory cache with TTL in seconds."""
     entry = _cache.get(key)
     now = time.time()
     if entry and (now - entry["ts"]) < entry["ttl"]:
@@ -44,20 +44,28 @@ def cache_set(key: str, data, ttl: float = 60):
 
 # ── UISP API Client ───────────────────────────────────────────
 
-def _uisp_headers() -> dict:
+def _nms_headers() -> dict:
+    """Headers for UISP NMS (network management) API."""
     return {
-        "x-auth-token": UISP_TOKEN,
+        "x-auth-token": UISP_API_TOKEN,
+        "Accept": "application/json",
+    }
+
+def _crm_headers() -> dict:
+    """Headers for UISP CRM (customer management) API."""
+    return {
+        "X-Auth-App-Key": UISP_CRM_APP_KEY,
         "Accept": "application/json",
     }
 
 
 def _uisp_get(path: str, timeout: int = UISP_TIMEOUT) -> dict | list | None:
-    """GET from UISP API. Returns parsed JSON or None on failure."""
-    if not UISP_TOKEN:
+    """GET from UISP NMS API."""
+    if not UISP_API_TOKEN:
         return None
     url = f"{UISP_BASE_URL}{path}"
     try:
-        r = requests.get(url, headers=_uisp_headers(), timeout=timeout)
+        r = requests.get(url, headers=_nms_headers(), timeout=timeout)
         r.raise_for_status()
         return r.json()
     except requests.exceptions.RequestException as e:
@@ -65,23 +73,23 @@ def _uisp_get(path: str, timeout: int = UISP_TIMEOUT) -> dict | list | None:
         return None
 
 
-def _uisp_post(path: str, payload: dict, timeout: int = UISP_TIMEOUT) -> dict | None:
-    """POST to UISP API. Returns parsed JSON or None on failure."""
-    if not UISP_TOKEN:
-        log.warning("No UISP_API_TOKEN set — cannot POST to UISP")
+def _uisp_post_to_crm(payload: dict, timeout: int = UISP_TIMEOUT) -> dict | None:
+    """POST to UISP CRM API to create a client/lead."""
+    if not UISP_CRM_APP_KEY:
+        log.warning("No UISP_CRM_APP_KEY set — cannot create lead in CRM")
         return None
-    url = f"{UISP_BASE_URL}{path}"
+    url = f"{UISP_BASE_URL}/crm/api/v1.0/clients"
     try:
         r = requests.post(
             url,
             json=payload,
-            headers={**_uisp_headers(), "Content-Type": "application/json"},
+            headers={**_crm_headers(), "Content-Type": "application/json"},
             timeout=timeout,
         )
         r.raise_for_status()
         return r.json()
     except requests.exceptions.RequestException as e:
-        log.error(f"UISP POST {path} failed: {e} | payload={payload}")
+        log.error(f"UISP CRM POST /clients failed: {e}")
         return None
 
 
@@ -93,7 +101,7 @@ def fetch_network_status() -> dict:
     if cached_result:
         return cached_result
 
-    if not UISP_TOKEN:
+    if not UISP_API_TOKEN:
         return {"available": False, "reason": "No UISP_API_TOKEN configured"}
 
     sites = _uisp_get("/nms/api/v2.1/sites")
@@ -102,11 +110,9 @@ def fetch_network_status() -> dict:
     if sites is None or devices is None:
         return {"available": False, "reason": "UISP unreachable"}
 
-    # Sites
     total_sites = len(sites)
     up_sites = sum(1 for s in sites if s.get("status") == "active")
 
-    # Devices
     total_devices = len(devices)
     healthy = sum(1 for d in devices if d.get("status") == "active")
     degraded = sum(1 for d in devices if d.get("status") == "disconnected")
@@ -124,11 +130,11 @@ def fetch_network_status() -> dict:
 
 
 def fetch_coverage_from_uisp() -> dict | None:
-    """Pull site geo data from UISP to render on the coverage map."""
-    if not UISP_TOKEN:
+    """Pull site geo data from UISP NMS to render on the coverage map."""
+    if not UISP_API_TOKEN:
         return None
 
-    cached_result = cached("uisp_coverage", ttl=300)  # 5 min
+    cached_result = cached("uisp_coverage", ttl=300)
     if cached_result:
         return cached_result
 
@@ -165,24 +171,24 @@ def fetch_coverage_from_uisp() -> dict | None:
     return result
 
 
-# ── Lead Storage (fallback when UISP CRM is down) ─────────────
+# ── Lead Fallback Storage ─────────────────────────────────────
 
 LEAD_LOG_PATH = Path(os.environ.get("LEAD_LOG_PATH", "/app/leads.json"))
 
 def _save_lead_locally(payload: dict):
     """Append lead to a local JSON file as fallback."""
-    LEADS: list = []
+    leads: list = []
     if LEAD_LOG_PATH.exists():
         try:
-            LEADS = json.loads(LEAD_LOG_PATH.read_text())
+            leads = json.loads(LEAD_LOG_PATH.read_text())
         except (json.JSONDecodeError, OSError):
             pass
-    LEADS.append({
+    leads.append({
         **payload,
         "received_at": datetime.now(timezone.utc).isoformat(),
     })
-    LEAD_LOG_PATH.write_text(json.dumps(LEADS, indent=2))
-    log.info(f"Lead saved locally ({len(LEADS)} total)")
+    LEAD_LOG_PATH.write_text(json.dumps(leads, indent=2))
+    log.info(f"Lead saved locally ({len(leads)} total)")
 
 
 # ── Routes ────────────────────────────────────────────────────
@@ -196,7 +202,6 @@ def index():
 
 @app.route("/api/coverage")
 def api_coverage():
-    """Coverage data — prefer UISP, fall back to local JSON."""
     uisp_data = fetch_coverage_from_uisp()
     if uisp_data and uisp_data.get("areas"):
         return jsonify(uisp_data)
@@ -218,7 +223,6 @@ def api_contact():
 
 @app.route("/api/submit-lead", methods=["POST"])
 def api_submit_lead():
-    """Accept lead from the website signup form, push to UISP CRM."""
     try:
         return _handle_submit_lead()
     except Exception as e:
@@ -240,52 +244,53 @@ def _handle_submit_lead():
     if not name:
         return jsonify({"ok": False, "error": "Name is required"}), 400
 
-    # Split first/last name
     parts = name.split(None, 1)
     first_name = parts[0]
     last_name = parts[1] if len(parts) > 1 else ""
 
-    # Build UISP CRM payload
-    uisp_payload = {
+    note_body = f"Website signup — {speed or 'any'} Mbps, {service_type or 'either'}"
+    if notes:
+        note_body += f" | Notes: {notes}"
+
+    crm_payload = {
         "firstName": first_name,
         "lastName": last_name,
         "contacts": [],
         "addresses": [],
         "lead": True,
-        "note": f"Website signup — {speed or 'any'} Mbps, {service_type or 'either'} "
-                f"| Notes: {notes}" if notes else f"Website signup — {speed or 'any'} Mbps, {service_type or 'either'}",
+        "note": note_body,
     }
 
     if email:
-        uisp_payload["contacts"].append({"email": email, "type": "email"})
+        crm_payload["contacts"].append({"email": email, "type": "email"})
     if phone:
-        uisp_payload["contacts"].append({"phone": phone, "type": "phone"})
-
+        crm_payload["contacts"].append({"phone": phone, "type": "phone"})
     if address:
-        uisp_payload["addresses"].append({
+        crm_payload["addresses"].append({
             "line1": address,
             "city": "Calgary",
             "province": "AB",
             "country": "CA",
         })
 
-    # Try creating lead in UISP CRM
-    crm_result = _uisp_post("/crm/api/v1/clients", uisp_payload)
+    # Try UISP CRM first
+    crm_result = _uisp_post_to_crm(crm_payload)
 
     if crm_result:
-        log.info(f"Lead created in UISP: {name} → client ID {crm_result.get('id', '?')}")
-        return jsonify({"ok": True, "source": "uisp", "id": crm_result.get("id")})
-    else:
-        # Fallback: save locally
-        _save_lead_locally(uisp_payload)
-        return jsonify({
-            "ok": True,
-            "source": "local",
-            "note": "Lead saved locally — UISP CRM was unreachable. We'll import it manually.",
-        })
+        client_id = crm_result.get("id", "?")
+        log.info(f"Lead created in UISP CRM: {name} → client {client_id}")
+        return jsonify({"ok": True, "source": "uisp-crm", "id": client_id})
+
+    # Fallback: save locally
+    _save_lead_locally(crm_payload)
+    return jsonify({
+        "ok": True,
+        "source": "local",
+        "note": "Lead saved locally — UISP CRM unreachable or not configured.",
+    })
 
 
-# ── Contact ───────────────────────────────────────────────────
+# ── Contact Info ──────────────────────────────────────────────
 
 def get_contact_info():
     return {
@@ -297,7 +302,7 @@ def get_contact_info():
     }
 
 
-# ── Coverage JSON loader (fallback) ───────────────────────────
+# ── Coverage JSON Fallback ────────────────────────────────────
 
 _coverage_cache = {"mtime": 0, "data": None}
 
@@ -309,7 +314,7 @@ def load_coverage():
                 raw = json.load(f)
             _coverage_cache["mtime"] = mtime
             _coverage_cache["data"] = raw
-    except (FileNotFoundError, json.JSONDecodeError) as e:
+    except (FileNotFoundError, json.JSONDecodeError):
         return _default_coverage()
     return _coverage_cache["data"]
 
