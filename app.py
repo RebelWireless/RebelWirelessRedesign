@@ -112,13 +112,6 @@ def fetch_network_status() -> dict:
     degraded = sum(1 for d in devices if d.get("status") == "disconnected")
     down = total_devices - healthy - degraded
 
-    # Clients (if UISP CRM is available)
-    clients = _uisp_get("/crm/api/v1/clients?limit=1")
-    client_count = None
-    if isinstance(clients, list):
-        # Count total from pagination header or estimate
-        client_count = "connected"  # placeholder — CRM may need different approach
-
     result = {
         "available": True,
         "sites": {"total": total_sites, "up": up_sites},
