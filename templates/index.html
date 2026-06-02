@@ -1331,7 +1331,7 @@
 
   // ===== NETWORK STATUS POLLING =====
   const statusDot = document.getElementById('statusDot');
-  const statusLabel = document.getElementById('statusLabel');
+  const statusLabelEl = document.getElementById('statusLabel');
   const statusDevices = document.getElementById('statusDevices');
   const statusSites = document.getElementById('statusSites');
 
@@ -1342,7 +1342,7 @@
 
       if (!data.available) {
         statusDot.className = 'dot grey';
-        statusLabel.textContent = 'UISP offline';
+        statusLabelEl.textContent = 'UISP offline';
         statusDevices.textContent = '';
         statusSites.textContent = '';
         return;
@@ -1353,7 +1353,7 @@
       const allUp = devs.down === 0 && devs.degraded === 0;
 
       statusDot.className = allUp ? 'dot green' : devs.down > 0 ? 'dot red' : 'dot yellow';
-      statusLabel.textContent = allUp ? 'All systems operational' :
+      statusLabelEl.textContent = allUp ? 'All systems operational' :
         devs.down > 0 ? `${devs.down} device${devs.down > 1 ? 's' : ''} down` :
         `${devs.degraded} device${devs.degraded > 1 ? 's' : ''} degraded`;
 
@@ -1362,7 +1362,7 @@
     } catch (err) {
       console.error('Status fetch failed:', err);
       statusDot.className = 'dot grey';
-      statusLabel.textContent = 'Status unavailable';
+      statusLabelEl.textContent = 'Status unavailable';
     }
   }
 
