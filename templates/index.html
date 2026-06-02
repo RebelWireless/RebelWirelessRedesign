@@ -641,6 +641,51 @@
     }
     .coverage-note strong { color: #60a5fa; }
 
+    /* ===== NETWORK STATUS BAR ===== */
+    .network-status-bar {
+      background: #111827;
+      border-bottom: 1px solid #1e293b;
+      padding: 10px 0;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      position: sticky;
+      top: 72px;
+      z-index: 40;
+    }
+    .network-status-bar .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .network-status-bar .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .network-status-bar .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .network-status-bar .dot.green { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+    .network-status-bar .dot.yellow { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+    .network-status-bar .dot.red { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+    .network-status-bar .dot.grey { background: #475569; }
+    .network-status-bar .stat { font-weight: 600; color: #f1f5f9; }
+    .network-status-bar .portal-link {
+      color: #3b82f6;
+      font-weight: 600;
+      padding: 4px 12px;
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    .network-status-bar .portal-link:hover { background: rgba(59,130,246,0.15); color: #60a5fa; }
+
     /* ===== FADE IN ===== */
     .fade-in {
       opacity: 0;
@@ -683,9 +728,20 @@
       <a href="#compare">Compare</a>
       <a href="#contact">Contact</a>
       <a href="#request" class="nav-cta">Get Connected</a>
+      <a href="https://uisp.rebelwireless.ca/crm" target="_blank" rel="noopener" style="color:#60a5fa;font-size:0.85rem" title="Customer Portal">Portal ↗</a>
     </div>
   </div>
 </nav>
+
+<!-- ===== NETWORK STATUS BAR ===== -->
+<div class="network-status-bar" id="networkStatus">
+  <div class="container">
+    <span class="status-indicator"><span class="dot grey" id="statusDot"></span> <span id="statusLabel">Checking network...</span></span>
+    <span id="statusDevices">—</span>
+    <span id="statusSites">—</span>
+    <a href="https://uisp.rebelwireless.ca/crm" class="portal-link" target="_blank" rel="noopener">Customer Portal ↗</a>
+  </div>
+</div>
 
 <!-- ===== HERO ===== -->
 <section class="hero">
@@ -801,7 +857,7 @@
       </div>
     </div>
     <div class="coverage-note">
-      <strong>📌 Updating the map:</strong> Coverage data is loaded from <code>coverage-data.json</code>. To add or update areas, edit that file and restart the container — the map updates automatically.
+      <strong>📌 Live coverage:</strong> Map data is pulled from <a href="https://uisp.rebelwireless.ca" style="color:#60a5fa">UISP</a> every 5 minutes. Add a new site in UISP and it appears here automatically.
     </div>
   </div>
 </section>
@@ -1235,16 +1291,83 @@
   const submitSuccess = document.getElementById('submitSuccess');
   const submitBtn = document.getElementById('submitBtn');
 
-  submitBtn.addEventListener('click', () => {
+  submitBtn.addEventListener('click', async () => {
     const name = document.getElementById('formName').value.trim();
     const address = document.getElementById('formAddress').value.trim();
+    const email = document.getElementById('formEmail').value.trim();
+    const phone = document.getElementById('formPhone').value.trim();
+    const speed = document.getElementById('formSpeed').value;
+    const serviceType = document.getElementById('formType').value;
+    const notes = document.getElementById('formMessage').value.trim();
 
     if (!name) { alert('Please enter your name.'); return; }
     if (!address) { alert('Please enter your Calgary address.'); return; }
 
-    formBody.style.display = 'none';
-    submitSuccess.classList.add('show');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    try {
+      const resp = await fetch('/api/submit-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, address, speed, serviceType, notes })
+      });
+      const result = await resp.json();
+      if (result.ok) {
+        formBody.style.display = 'none';
+        submitSuccess.classList.add('show');
+      } else {
+        alert('Error: ' + (result.error || 'Unknown error'));
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Request';
+      }
+    } catch (err) {
+      console.error('Lead submission failed:', err);
+      alert('Failed to submit. Please try again or call us at (587) 205-5550.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Request';
+    }
   });
+
+  // ===== NETWORK STATUS POLLING =====
+  const statusDot = document.getElementById('statusDot');
+  const statusLabel = document.getElementById('statusLabel');
+  const statusDevices = document.getElementById('statusDevices');
+  const statusSites = document.getElementById('statusSites');
+
+  async function updateNetworkStatus() {
+    try {
+      const r = await fetch('/api/network-status');
+      const data = await r.json();
+
+      if (!data.available) {
+        statusDot.className = 'dot grey';
+        statusLabel.textContent = 'UISP offline';
+        statusDevices.textContent = '';
+        statusSites.textContent = '';
+        return;
+      }
+
+      const devs = data.devices;
+      const sites = data.sites;
+      const allUp = devs.down === 0 && devs.degraded === 0;
+
+      statusDot.className = allUp ? 'dot green' : devs.down > 0 ? 'dot red' : 'dot yellow';
+      statusLabel.textContent = allUp ? 'All systems operational' :
+        devs.down > 0 ? `${devs.down} device${devs.down > 1 ? 's' : ''} down` :
+        `${devs.degraded} device${devs.degraded > 1 ? 's' : ''} degraded`;
+
+      statusDevices.textContent = `${devs.healthy}/${devs.total} devices`;
+      statusSites.textContent = `${sites.up}/${sites.total} sites`;
+    } catch (err) {
+      console.error('Status fetch failed:', err);
+      statusDot.className = 'dot grey';
+      statusLabel.textContent = 'Status unavailable';
+    }
+  }
+
+  updateNetworkStatus();
+  setInterval(updateNetworkStatus, 60000);
 </script>
 </body>
 </html>
