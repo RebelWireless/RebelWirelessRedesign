@@ -208,9 +208,33 @@
                   radial-gradient(ellipse at 70% 30%, rgba(6,182,212,0.05) 0%, transparent 50%);
       pointer-events: none;
     }
+    .hero .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
     .hero-content {
       position: relative;
-      max-width: 860px;
+      max-width: none;
+    }
+    .hero-image {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-image svg {
+      width: 100%;
+      max-width: 480px;
+      height: auto;
+    }
+    @media (max-width: 768px) {
+      .hero .container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .hero-image { display: none; }
     }
     .hero-badge {
       display: inline-flex;
@@ -713,6 +737,51 @@
           <div class="hero-stat-label">Calgary team</div>
         </div>
       </div>
+    </div>
+    <div class="hero-image">
+      <svg viewBox="0 0 480 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="240" cy="180" r="160" fill="url(#heroGlow)" opacity="0.4"/>
+        <rect x="226" y="80" width="28" height="200" rx="4" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+        <rect x="218" y="260" width="44" height="8" rx="2" fill="#334155"/>
+        <rect x="218" y="276" width="44" height="8" rx="2" fill="#334155"/>
+        <line x1="240" y1="80" x2="240" y2="40" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+        <path d="M210 20 Q200 35 210 50" stroke="#3b82f6" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.9">
+          <animate attributeName="opacity" values="0.9;0.3;0.9" dur="2.5s" repeatCount="indefinite"/>
+        </path>
+        <path d="M195 8 Q180 35 195 62" stroke="#60a5fa" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7">
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.5s" repeatCount="indefinite" begin="0.4s"/>
+        </path>
+        <path d="M180 -5 Q160 35 180 75" stroke="#93c5fd" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.5">
+          <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.5s" repeatCount="indefinite" begin="0.8s"/>
+        </path>
+        <rect x="60" y="220" width="90" height="140" rx="6" fill="#111827" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="75" y="235" width="14" height="18" rx="2" fill="#fbbf24" opacity="0.7"/>
+        <rect x="105" y="235" width="14" height="18" rx="2" fill="#fbbf24" opacity="0.5"/>
+        <rect x="75" y="270" width="14" height="18" rx="2" fill="#fbbf24" opacity="0.9"/>
+        <rect x="105" y="270" width="14" height="18" rx="2" fill="#fbbf24" opacity="0.4"/>
+        <rect x="75" y="305" width="14" height="18" rx="2" fill="#fbbf24" opacity="0.6"/>
+        <rect x="105" y="305" width="14" height="18" rx="2" fill="#fbbf24" opacity="0.8"/>
+        <rect x="330" y="250" width="80" height="110" rx="6" fill="#111827" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="344" y="263" width="12" height="14" rx="2" fill="#60a5fa" opacity="0.7"/>
+        <rect x="370" y="263" width="12" height="14" rx="2" fill="#60a5fa" opacity="0.5"/>
+        <rect x="344" y="293" width="12" height="14" rx="2" fill="#60a5fa" opacity="0.9"/>
+        <rect x="370" y="293" width="12" height="14" rx="2" fill="#60a5fa" opacity="0.4"/>
+        <rect x="344" y="323" width="12" height="14" rx="2" fill="#60a5fa" opacity="0.6"/>
+        <rect x="370" y="323" width="12" height="14" rx="2" fill="#60a5fa" opacity="0.8"/>
+        <ellipse cx="300" cy="235" rx="30" ry="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+        <line x1="300" y1="235" x2="300" y2="210" stroke="#475569" stroke-width="2"/>
+        <ellipse cx="300" cy="208" rx="18" ry="6" fill="#111827" stroke="#3b82f6" stroke-width="1.5"/>
+        <path d="M240 240 L195 270" stroke="#334155" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/>
+        <path d="M240 240 L370 290" stroke="#334155" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/>
+        <rect x="310" y="175" width="100" height="36" rx="18" fill="#0d1324" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="360" y="198" font-family="Inter,sans-serif" font-weight="700" font-size="15" fill="#60a5fa" text-anchor="middle">1 Gbps ⚡</text>
+        <defs>
+          <radialGradient id="heroGlow" cx="50%" cy="50%">
+            <stop offset="0%" stop-color="#3b82f6"/>
+            <stop offset="100%" stop-color="#0a0f1e" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+      </svg>
     </div>
   </div>
 </section>
