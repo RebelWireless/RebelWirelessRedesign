@@ -24,6 +24,9 @@ COPY app.py .
 COPY coverage-data.json .
 COPY templates/ templates/
 
+# Ensure rebel user can write lead files
+RUN chown -R rebel:rebel /app
+
 EXPOSE 5000
 
 USER rebel

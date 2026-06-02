@@ -219,6 +219,14 @@ def api_contact():
 @app.route("/api/submit-lead", methods=["POST"])
 def api_submit_lead():
     """Accept lead from the website signup form, push to UISP CRM."""
+    try:
+        return _handle_submit_lead()
+    except Exception as e:
+        log.exception("Lead submission crashed")
+        return jsonify({"ok": False, "error": f"Server error: {e}"}), 500
+
+
+def _handle_submit_lead():
     data = request.get_json(silent=True) or {}
 
     name = (data.get("name") or "").strip()
