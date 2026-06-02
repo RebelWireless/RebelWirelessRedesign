@@ -256,22 +256,26 @@ def _handle_submit_lead():
         "firstName": first_name,
         "lastName": last_name,
         "contacts": [],
-        "addresses": [],
-        "lead": True,
         "note": note_body,
     }
 
     if email:
-        crm_payload["contacts"].append({"email": email, "type": "email"})
-    if phone:
-        crm_payload["contacts"].append({"phone": phone, "type": "phone"})
-    if address:
-        crm_payload["addresses"].append({
-            "line1": address,
-            "city": "Calgary",
-            "province": "AB",
-            "country": "CA",
+        crm_payload["contacts"].append({
+            "email": email,
+            "isBilling": True,
+            "isContact": True,
         })
+    if phone:
+        crm_payload["contacts"].append({
+            "phone": phone,
+            "isBilling": False,
+            "isContact": True,
+        })
+    if address:
+        crm_payload["street1"] = address
+        crm_payload["city"] = "Calgary"
+        crm_payload["stateId"] = 51   # Alberta
+        crm_payload["countryId"] = 54  # Canada
 
     # Try UISP CRM first
     crm_result = _uisp_post_to_crm(crm_payload)
