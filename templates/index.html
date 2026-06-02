@@ -641,51 +641,6 @@
     }
     .coverage-note strong { color: #60a5fa; }
 
-    /* ===== NETWORK STATUS BAR ===== */
-    .network-status-bar {
-      background: #111827;
-      border-bottom: 1px solid #1e293b;
-      padding: 10px 0;
-      font-size: 0.82rem;
-      color: #94a3b8;
-      position: sticky;
-      top: 72px;
-      z-index: 40;
-    }
-    .network-status-bar .container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-    .network-status-bar .status-indicator {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .network-status-bar .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .network-status-bar .dot.green { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
-    .network-status-bar .dot.yellow { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.5); }
-    .network-status-bar .dot.red { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
-    .network-status-bar .dot.grey { background: #475569; }
-    .network-status-bar .stat { font-weight: 600; color: #f1f5f9; }
-    .network-status-bar .portal-link {
-      color: #3b82f6;
-      font-weight: 600;
-      padding: 4px 12px;
-      border: 1px solid rgba(59,130,246,0.3);
-      border-radius: 6px;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-    }
-    .network-status-bar .portal-link:hover { background: rgba(59,130,246,0.15); color: #60a5fa; }
-
     /* ===== FADE IN ===== */
     .fade-in {
       opacity: 0;
@@ -732,16 +687,6 @@
     </div>
   </div>
 </nav>
-
-<!-- ===== NETWORK STATUS BAR ===== -->
-<div class="network-status-bar" id="networkStatus">
-  <div class="container">
-    <span class="status-indicator"><span class="dot grey" id="statusDot"></span> <span id="statusLabel">Checking network...</span></span>
-    <span id="statusDevices">—</span>
-    <span id="statusSites">—</span>
-    <a href="https://uisp.rebelwireless.ca/crm" class="portal-link" id="portalLink" target="_blank" rel="noopener">Customer Portal ↗</a>
-  </div>
-</div>
 
 <!-- ===== HERO ===== -->
 <section class="hero">
@@ -1328,50 +1273,6 @@
       submitBtn.textContent = 'Submit Request';
     }
   });
-
-  // ===== NETWORK STATUS POLLING =====
-  const statusDot = document.getElementById('statusDot');
-  const statusLabelEl = document.getElementById('statusLabel');
-  const statusDevices = document.getElementById('statusDevices');
-  const statusSites = document.getElementById('statusSites');
-  const portalLink = document.getElementById('portalLink');
-
-  async function updateNetworkStatus() {
-    try {
-      const r = await fetch('/api/network-status');
-      const data = await r.json();
-
-      if (!data.available) {
-        statusDot.className = 'dot grey';
-        statusLabelEl.textContent = 'UISP offline';
-        statusDevices.textContent = '';
-        statusSites.textContent = '';
-        portalLink.style.display = 'none';
-        return;
-      }
-
-      portalLink.style.display = '';
-      const devs = data.devices;
-      const sites = data.sites;
-      const allUp = devs.down === 0 && devs.degraded === 0;
-
-      statusDot.className = allUp ? 'dot green' : devs.down > 0 ? 'dot red' : 'dot yellow';
-      statusLabelEl.textContent = allUp ? 'All systems operational' :
-        devs.down > 0 ? `${devs.down} device${devs.down > 1 ? 's' : ''} down` :
-        `${devs.degraded} device${devs.degraded > 1 ? 's' : ''} degraded`;
-
-      statusDevices.textContent = `${devs.healthy}/${devs.total} devices`;
-      statusSites.textContent = `${sites.up}/${sites.total} sites`;
-    } catch (err) {
-      console.error('Status fetch failed:', err);
-      statusDot.className = 'dot grey';
-      statusLabelEl.textContent = 'Status unavailable';
-      portalLink.style.display = 'none';
-    }
-  }
-
-  updateNetworkStatus();
-  setInterval(updateNetworkStatus, 60000);
 </script>
 </body>
 </html>
