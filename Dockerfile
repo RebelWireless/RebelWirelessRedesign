@@ -23,6 +23,7 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY app.py .
 COPY coverage-data.json .
 COPY templates/ templates/
+COPY static/ static/
 
 # Ensure rebel user can write lead files
 RUN chown -R rebel:rebel /app
